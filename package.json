@@ -2,7 +2,7 @@
   "name": "angular-xeditable",
   "description": "Edit-in-place for angular.js",
   "version": "0.7.1",
-  "homepage": "https://vitalets.github.io/angular-xeditable",
+  "homepage": "https://stefantrew2.github.io/angular-xeditable",
   "author": {
     "name": "Vitaliy Potapov",
     "email": "noginsk@rambler.ru"
@@ -11,7 +11,7 @@
   "style": "dist/css/xeditable.css",
   "repository": {
     "type": "git",
-    "url": "git://github.com/vitalets/angular-xeditable.git"
+    "url": "git://github.com/stefantrew2/angular-xeditable.git"
   },
   "engines": {
     "node": ">= 0.8.0"
@@ -43,7 +43,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vitalets/angular-xeditable/issues"
+    "url": "https://github.com/stefantrew2/angular-xeditable/issues"
   },
   "scripts": {
     "build": "grunt build",

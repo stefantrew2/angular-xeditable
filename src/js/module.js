@@ -2,7 +2,7 @@
  * Angular-xeditable module 
  *
  */
-angular.module('xeditable', [])
+angular.module('xeditable', ['ngSanitize','ui.bootstrap'])
 
 
 /**

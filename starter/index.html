@@ -1,27 +1,102 @@
 <!DOCTYPE html>
 <html ng-app="app">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Angular-xeditable Starter Template</title>
-    <!-- Bootstrap 3 css -->
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Angular.js -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
-    <!-- Angular-xeditable -->
-    <link href="angular-xeditable/css/xeditable.css" rel="stylesheet">
-    <script src="angular-xeditable/js/xeditable.js"></script>
-    <!-- app.js -->
-    <script src="app.js"></script>
-  </head>
-  <body style="padding: 20px">
-    <h1 style="margin-bottom: 20px">Angular-xeditable Starter Template</h1>
-    <div ng-controller="Ctrl">
-      <!-- editable element -->
-      <a href="#" editable-text="user.name">{{ user.name || "empty" }}</a>
-      <div id="debug" style="margin-top: 30px">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angular-xeditable Starter Template</title>
+  <!-- Bootstrap 3 css -->
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Angular.js -->
+  <!-- Angular-xeditable -->
+  <link href="angular-xeditable/css/xeditable.css" rel="stylesheet">
+  <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+  <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+  <script src="moment.min.js"></script>
+  <script src="angular-xeditable/js/xeditable.js"></script>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+
+  <!-- app.js -->
+  <script src="app.js"></script>
+  <style>
+
+    datetimepicker 
+    .btn {
+      padding:0px;
+    }
+
+    datetimepicker .datetimepicker-wrapper .uib-increment {
+      height : 0.9em;
+      width: 30px !important;
+    }
+
+    form.editable-date-time .editable-buttons {
+    vertical-align: middle; 
+    }
+
+
+    datetimepicker .datetimepicker-wrapper {
+      vertical-align: middle;
+      display: inline-block;
+
+    }
+
+    datetimepicker .datetimepicker-wrapper > input {
+      margin-bottom: 0 !important;
+      padding-right: 0 !important;
+      width: 100px;
+      height: 25.6px;
+      font-size : 0.85em;
+      line-height : 0.85em;
+    }
+
+    datetimepicker .datetimepicker-wrapper [ng-model=hours], 
+    datetimepicker .datetimepicker-wrapper [ng-model=seconds], 
+    datetimepicker .datetimepicker-wrapper [ng-model=minutes] {
+      height: 25.6px;
+      font-size : 0.85em;
+      line-height : 0.85em;
+      width: 30px !important;
+      padding: 1px;
+    }
+
+    form.editable-date-time { 
+      white-space : normal
+    }
+
+  </style>
+</head>
+<body style="padding: 20px">
+  <h1 style="margin-bottom: 20px">Angular-xeditable Starter Template</h1>
+  <div ng-controller="Ctrl">
+    <!-- editable element -->
+    <a href="#" editable-text="user.name">{{ user.name || "empty" }}</a>
+    <div id="debug" style="margin-top: 30px">
       {{ user | json }}
-      </div>
     </div>
-  </body>
+
+<form editable-form name="editableForm" onaftersave="saveEntityObject()">
+<h4>
+        <div class="buttons pull-right">
+          <button type="button" class="btn btn-xs btn-success" ng-click="editableForm.$show()" ng-show="!editableForm.$visible"> Edit </button>
+          <span ng-show="editableForm.$visible">
+            <button type="submit" class="btn btn-xs btn-primary" ng-disabled="editableForm.$waiting"> Save </button>
+            <button type="button" class="btn btn-xs btn-warning" ng-disabled="editableForm.$waiting" ng-click="ctrl.cancelCreate()"> Cancel </button>
+          </span>
+        </div>
+      </h4>
+    <span 
+    editable-date-time="user.date"
+     e-hidden-time='true'
+    >{{ user.date | date:"yyyy-MM-dd H-mm-ss"}}</span>
+
+    {{user | json}}
+</form>
+
+  </div>
+</body>
 </html>  

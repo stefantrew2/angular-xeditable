@@ -21,14 +21,14 @@ module.exports = function(grunt) {
   grunt.config('jshint', {
     options: { },
     all: [
-      'Gruntfile.js',
-      'src/js/**/*.js'
+    'Gruntfile.js',
+    'src/js/**/*.js'
     ]
   });
 
   var banner = '/*!\n<%= pkg.name %> - <%= pkg.version %>\n' +
-              '<%= pkg.description %>\n'+
-              'Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n*/\n';
+  '<%= pkg.description %>\n'+
+  'Build date: <%= grunt.template.today("yyyy-mm-dd") %> \n*/\n';
 
   //cssmin
   grunt.loadNpmTasks('grunt-contrib-cssmin');
@@ -73,7 +73,7 @@ module.exports = function(grunt) {
   grunt.config('uglify', {
     options: {
       banner: banner
-   },
+    },
     dist: {
       src: ['<%= concat.dist.dest %>'],
       dest: 'dist/js/xeditable.min.js'
@@ -161,7 +161,7 @@ module.exports = function(grunt) {
   grunt.config('connect', {
     server: {
       options: {
-        port: 8000,
+        port: 8800,
         base: '.'
       }
     }
@@ -220,16 +220,16 @@ module.exports = function(grunt) {
     'copy',
     'compress',
     'docs'
-  ]);
+    ]);
 
   grunt.registerTask('docs', [
     'shell:jsdoc',
     'loadjsdoc',
     'jade'
-  ]);
+    ]);
 
   grunt.registerTask('server', [
     'connect:server:keepalive'
-  ]);
+    ]);
 
 };
