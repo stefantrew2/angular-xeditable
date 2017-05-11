@@ -128,7 +128,8 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
           // bind click - if no external form defined
           if(!attrs.eForm || attrs.eClickable) {
             elem.addClass('editable-click');
-            elem.bind(editableOptions.activationEvent, function(e) {
+            var activationEvent = (attrs.activationEvent) ? attrs.activationEvent : editableOptions.activationEvent;
+            elem.bind(activationEvent, function(e) {
               e.preventDefault();
               e.editable = eCtrl;
               if(!is_disabled()) {

@@ -210,8 +210,8 @@ module.exports = function(grunt) {
   });
 
 
-  //metatasks
-  grunt.registerTask('build', [
+   //metatasks
+  grunt.registerTask('buildmin', [
     'jshint',
     'clean',
     'cssmin',
@@ -220,6 +220,18 @@ module.exports = function(grunt) {
     'copy',
     'compress',
     'docs'
+    ]);
+
+  //metatasks
+  grunt.registerTask('build', [
+    'jshint',
+    'clean',
+    'cssmin',
+    'concat',
+    // 'uglify',
+    'copy'
+    // ,'compress',
+    // 'docs'
     ]);
 
   grunt.registerTask('docs', [
