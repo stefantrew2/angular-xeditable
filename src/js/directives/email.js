@@ -1,27 +1,8 @@
-/*
-Input types: text|password|number|url|search|color|date|datetime|datetime-local|time|month|week|file
-*/
-
-(function() {
-
-  var camelCase = function(dashDelimitedString) {
-    return dashDelimitedString.toLowerCase().replace(/-(.)/g, function(match, word) {
-      return word.toUpperCase();
-    });
-  };
-
-  var types = 'text|password|number|url|search|color|date|datetime|datetime-local|time|month|week|file'.split('|');
-
-  //todo: datalist
-  
-  // generate directives
-  angular.forEach(types, function(type) {
-    var directiveName = camelCase('editable' + '-' + type);
-    angular.module('xeditable').directive(directiveName, ['editableDirectiveFactory',
+    angular.module('xeditable').directive("editableEmail", ['editableDirectiveFactory',
       function(editableDirectiveFactory) {
         return editableDirectiveFactory({
-          directiveName: directiveName,
-          inputTpl: '<input type="'+type+'">',
+          directiveName: "editableEmail",
+          inputTpl: '<input type="email" user-email-async-validator fc-check-unique="{{attrs.fcCheckUnique}}">',
           render: function() {
             this.parent.render.call(this);
 
@@ -60,28 +41,46 @@ Input types: text|password|number|url|search|color|date|datetime|datetime-local|
             self.inputEl.bind('keydown', function(e) {
                 //submit on tab
                 if (e.keyCode === 9 && self.editorEl.attr('blur') === 'submit') {
-                    self.scope.$apply(function() {
-                        self.scope.$form.$submit();
-                    });
+                  self.scope.$apply(function() {
+                    self.scope.$form.$submit();
+                  });
                 }
-            });
+              });
           }
         });
+      }]);
+
+    angular.module('xeditable').directive("userEmailAsyncValidator", ["$q", "$http", function userEmailAsyncValidator($q, $http) {
+      return {
+        require: 'ngModel',
+        link: function(scope, elm, attrs, ctrl) {
+
+          ctrl.$asyncValidators.email_exists = function(modelValue, viewValue) {
+
+            if (attrs.fcCheckUnique === "false" || ctrl.$isEmpty(modelValue)) {
+              return $q.when();
+            }
+
+            var def = $q.defer();
+
+            $http({
+              method: "post",
+              url: "/UserRegController/JSONView/checkIfEmailExists.html",
+              data: Object.toparams({email : modelValue})
+            }).then(function (result) {
+              if (result.data.model.email_exists === "0") {
+                def.resolve();
+              } else {
+                def.reject(); 
+              }
+            });
+
+
+
+            return def.promise;
+          };
+        }
+      };
     }]);
-  });
 
-  //`range` is bit specific
-  angular.module('xeditable').directive('editableRange', ['editableDirectiveFactory', '$interpolate',
-    function(editableDirectiveFactory, $interpolate) {
-      return editableDirectiveFactory({
-        directiveName: 'editableRange',
-        inputTpl: '<input type="range" id="range" name="range">',
-        render: function() {
-          this.parent.render.call(this);
-          this.inputEl.after('<output>' + $interpolate.startSymbol() + '$data' + $interpolate.endSymbol()  + '</output>');
-        }        
-      });
-  }]);
-
-}());
 
