@@ -20,7 +20,8 @@
     "dist/**/*"
   ],
   "dependencies": {
-    "angular": "~1.x"
+    "angular": "~1.x",
+    "ng-intl-tel-input": "^2.0.0"
   },
   "devDependencies": {
     "bower": "^1.8.0",
@@ -47,6 +48,7 @@
   },
   "scripts": {
     "build": "grunt build",
+    "buildmin": "grunt buildmin",
     "start": "grunt server",
     "prepublish": "bower update"
   }
