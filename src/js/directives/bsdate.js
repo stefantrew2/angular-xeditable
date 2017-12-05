@@ -39,7 +39,7 @@ angular.module('xeditable').directive('editableBsdate', ['editableDirectiveFacto
 
         return editableDirectiveFactory({
             directiveName: 'editableBsdate',
-            inputTpl: '<div></div>',
+            inputTpl: '<span></span>',
             render: function() {
                 /** This basically renders a datepicker as in the example shown in
                  **  http://angular-ui.github.io/bootstrap/#/datepicker
