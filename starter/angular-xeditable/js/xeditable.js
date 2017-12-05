@@ -1,7 +1,7 @@
 /*!
 angular-xeditable - 0.7.1
 Edit-in-place for angular.js
-Build date: 2017-05-11 
+Build date: 2017-12-05 
 */
 /**
  * Angular-xeditable module 
@@ -159,8 +159,8 @@ angular.module('xeditable').directive('editableBsdate', ['editableDirectiveFacto
     function(editableDirectiveFactory, $injector, $parse) {
 
         // Constants from Angular-ui bootstrap datepicker
-        uibDatepickerConfig = $injector.get('uibDatepickerConfig');
-        uibDatepickerPopupConfig = $injector.get('uibDatepickerPopupConfig');
+        var uibDatepickerConfig = $injector.get('uibDatepickerConfig');
+        var uibDatepickerPopupConfig = $injector.get('uibDatepickerPopupConfig');
 
         var popupAttrNames = [
             ['eIsOpen', 'is-open'],
@@ -192,7 +192,7 @@ angular.module('xeditable').directive('editableBsdate', ['editableDirectiveFacto
 
         return editableDirectiveFactory({
             directiveName: 'editableBsdate',
-            inputTpl: '<div></div>',
+            inputTpl: '<span></span>',
             render: function() {
                 /** This basically renders a datepicker as in the example shown in
                  **  http://angular-ui.github.io/bootstrap/#/datepicker
@@ -434,8 +434,203 @@ angular.module('xeditable').directive('editableCombodate', ['editableDirectiveFa
   }
 ]);
 
+//textarea
+angular.module('xeditable').directive('editableDateTime', ['editableDirectiveFactory',
+  function(editableDirectiveFactory) {
+
+    var popupAttrNames = [
+    ['eDisabledDate','disabled-date'],
+    ['eHiddenTime','hidden-time'],
+    ['eHiddenDate','hidden-date'],
+    ['eShowSpinners', 'show-spinners'],
+    ['eHourStep','hour-step'],
+    ['eMinuteStep','minute-step'],
+    ['eSecondStep','second-step'],
+    ['eReadonlyTime','readonly-time'],
+    ['eDateOpened','date-opened'],
+    ['eShowButtonBar','show-button-bar'],
+    ['eShowMeridian','show-meridian'],
+    ['eShowSeconds','show-seconds']
+    ];
+
+    var popupAttrDefaults = {
+      'eDisabledDate' : false,
+      'eHiddenTime' : false,
+      'eHiddenDate' : false,
+      'eShowSpinners' : true,
+      'eHourStep' :  1,
+      'eMinuteStep' : 10,
+      'eSecondStep' : 10,
+      'eReadonlyTime' : false,
+      'eShowButtonBar' : true,
+      'eShowMeridian' : false,
+      'eShowSeconds' : true
+    };
+
+    var dir =  editableDirectiveFactory({
+      directiveName: 'editableDateTime',
+      inputTpl: '<span></span>',
+      render: function() {
+        var self = this;
+        this.parent.render.call(this);
+
+        var attrs = this.attrs;
+        var scope = this.scope;
+
+        var inputDatePicker = angular.element('<datetimepicker type="text" ng-model="$parent.$data"></datetimepicker>');
+
+        inputDatePicker.attr('ng-readonly', attrs.eReadonly || false);
+
+        for (var i = popupAttrNames.length - 1; i >= 0; i--) {
+          var popupAttr = attrs[popupAttrNames[i][0]];
+          if (typeof popupAttr !== 'undefined') {
+            inputDatePicker.attr(popupAttrNames[i][1], popupAttr);
+          } else {
+            var defaultValue = popupAttrDefaults[popupAttrNames[i][0]];
+            if (typeof defaultValue !== 'undefined') {
+              inputDatePicker.attr(popupAttrNames[i][1], defaultValue);
+            }
+          }
+        }
+
+        if (attrs.eNgChange) {
+          inputDatePicker.attr('ng-change', attrs.eNgChange);
+          this.inputEl.removeAttr('ng-change');
+        }
+
+        if (attrs.eStyle) {
+          inputDatePicker.attr('style', attrs.eStyle);
+          this.inputEl.removeAttr('style');
+        }
+
+        this.inputEl.prepend(inputDatePicker);
+
+        this.inputEl.removeAttr('class');
+        this.inputEl.removeAttr('ng-click');
+        this.inputEl.removeAttr('is-open');
+        this.inputEl.removeAttr('init-date');
+        this.inputEl.removeAttr('datepicker-popup');
+        this.inputEl.removeAttr('required');
+        this.inputEl.removeAttr('ng-model');
+        this.inputEl.removeAttr('date-picker-append-to-body');
+        this.inputEl.removeAttr('name');
+
+      },
+      autosubmit: function() {
+        var self = this;
+        self.inputEl.bind('change', function() {
+          setTimeout(function() {
+            self.scope.$apply(function() {
+              self.scope.$form.$submit();
+            });
+          }, 500);
+        });
+
+        self.inputEl.bind('keydown', function(e) {
+          if (e.keyCode === 9 && self.editorEl.attr('blur') === 'submit') {
+            self.scope.$apply(function() {
+              self.scope.$form.$submit();
+            });
+          }
+        });
+      }
+    });
+
+    return dir;
+
+  }
+
+  ]);
+
+    angular.module('xeditable').directive("editableEmail", ['editableDirectiveFactory',
+      function(editableDirectiveFactory) {
+        return editableDirectiveFactory({
+          directiveName: "editableEmail",
+          inputTpl: '<input type="email" user-email-async-validator fc-check-unique="{{attrs.fcCheckUnique}}">',
+          render: function() {
+            this.parent.render.call(this);
+
+            //Add bootstrap simple input groups
+            if (this.attrs.eInputgroupleft || this.attrs.eInputgroupright) {
+              this.inputEl.wrap('<div class="input-group"></div>');
+
+              if (this.attrs.eInputgroupleft) {
+                var inputGroupLeft = angular.element('<span class="input-group-addon">' + this.attrs.eInputgroupleft + '</span>');
+                this.inputEl.parent().prepend(inputGroupLeft);
+              }
+
+              if (this.attrs.eInputgroupright) {
+                var inputGroupRight = angular.element('<span class="input-group-addon">' + this.attrs.eInputgroupright + '</span>');
+                this.inputEl.parent().append(inputGroupRight);
+              }
+            }
+
+            // Add label to the input
+            if (this.attrs.eLabel) {
+              var label = angular.element('<label>' + this.attrs.eLabel + '</label>');
+              if (this.attrs.eInputgroupleft || this.attrs.eInputgroupright) {
+                this.inputEl.parent().parent().prepend(label);
+              } else {
+                this.inputEl.parent().prepend(label);
+              }
+            }
+            
+            // Add classes to the form
+            if (this.attrs.eFormclass) {
+              this.editorEl.addClass(this.attrs.eFormclass);
+            }
+          },
+          autosubmit: function() {
+            var self = this;
+            self.inputEl.bind('keydown', function(e) {
+                //submit on tab
+                if (e.keyCode === 9 && self.editorEl.attr('blur') === 'submit') {
+                  self.scope.$apply(function() {
+                    self.scope.$form.$submit();
+                  });
+                }
+              });
+          }
+        });
+      }]);
+
+    angular.module('xeditable').directive("userEmailAsyncValidator", ["$q", "$http", function userEmailAsyncValidator($q, $http) {
+      return {
+        require: 'ngModel',
+        link: function(scope, elm, attrs, ctrl) {
+
+          ctrl.$asyncValidators.email_exists = function(modelValue, viewValue) {
+
+            if (attrs.fcCheckUnique === "false" || ctrl.$isEmpty(modelValue)) {
+              return $q.when();
+            }
+
+            var def = $q.defer();
+
+            $http({
+              method: "post",
+              url: "/UserRegController/JSONView/checkIfEmailExists.html",
+              data: Object.toparams({email : modelValue})
+            }).then(function (result) {
+              if (result.data.model.email_exists === "0") {
+                def.resolve();
+              } else {
+                def.reject(); 
+              }
+            });
+
+
+
+            return def.promise;
+          };
+        }
+      };
+    }]);
+
+
+
 /*
-Input types: text|password|email|tel|number|url|search|color|date|datetime|datetime-local|time|month|week|file
+Input types: text|password|number|url|search|color|date|datetime|datetime-local|time|month|week|file
 */
 
 (function() {
@@ -446,7 +641,7 @@ Input types: text|password|email|tel|number|url|search|color|date|datetime|datet
     });
   };
 
-  var types = 'text|password|email|tel|number|url|search|color|date|datetime|datetime-local|time|month|week|file'.split('|');
+  var types = 'text|password|number|url|search|color|date|datetime|datetime-local|time|month|week|file'.split('|');
 
   //todo: datalist
   
@@ -554,6 +749,61 @@ angular.module('xeditable').directive('editableTagsInput', ['editableDirectiveFa
 
     return dir;
 }]);
+    angular.module('xeditable').directive("editablePhoneNumber", ['editableDirectiveFactory',
+      function(editableDirectiveFactory) {
+        return editableDirectiveFactory({
+          directiveName: "editablePhoneNumber",
+          inputTpl: '<input type="tel" ng-model="a" ng-intl-tel-input>',
+          render: function() {
+            this.parent.render.call(this);
+
+            //Add bootstrap simple input groups
+            if (this.attrs.eInputgroupleft || this.attrs.eInputgroupright) {
+              this.inputEl.wrap('<div class="input-group"></div>');
+
+              if (this.attrs.eInputgroupleft) {
+                var inputGroupLeft = angular.element('<span class="input-group-addon">' + this.attrs.eInputgroupleft + '</span>');
+                this.inputEl.parent().prepend(inputGroupLeft);
+              }
+
+              if (this.attrs.eInputgroupright) {
+                var inputGroupRight = angular.element('<span class="input-group-addon">' + this.attrs.eInputgroupright + '</span>');
+                this.inputEl.parent().append(inputGroupRight);
+              }
+            }
+
+            // Add label to the input
+            if (this.attrs.eLabel) {
+              var label = angular.element('<label>' + this.attrs.eLabel + '</label>');
+              if (this.attrs.eInputgroupleft || this.attrs.eInputgroupright) {
+                this.inputEl.parent().parent().prepend(label);
+              } else {
+                this.inputEl.parent().prepend(label);
+              }
+            }
+            
+            // Add classes to the form
+            if (this.attrs.eFormclass) {
+              this.editorEl.addClass(this.attrs.eFormclass);
+            }
+          },
+          autosubmit: function() {
+            var self = this;
+            self.inputEl.bind('keydown', function(e) {
+                //submit on tab
+                if (e.keyCode === 9 && self.editorEl.attr('blur') === 'submit') {
+                  self.scope.$apply(function() {
+                    self.scope.$form.$submit();
+                  });
+                }
+              });
+          }
+        });
+      }]);
+
+  
+
+
 // radiolist
 angular.module('xeditable').directive('editableRadiolist', [
   'editableDirectiveFactory',
@@ -696,6 +946,25 @@ angular.module('xeditable').directive('editableUiSelect',['editableDirectiveFact
                 this.inputEl.append(editableUtils.rename('ui-select-choices', this.attrs.$choicesElement));
                 this.inputEl.removeAttr('ng-model');
                 this.inputEl.attr('ng-model', '$parent.$parent.$data');
+            },
+            autosubmit: function() {
+                var self = this;
+                self.inputEl.bind('change', function() {
+                    setTimeout(function() {
+                        self.scope.$apply(function() {
+                            self.scope.$form.$submit();
+                        });
+                    }, 500);
+                });
+
+                self.inputEl.bind('keydown', function(e) {
+                    //submit on tab
+                    if (e.keyCode === 9 && self.editorEl.attr('blur') === 'submit') {
+                        self.scope.$apply(function() {
+                            self.scope.$form.$submit();
+                        });
+                    }
+                });
             }
         });
 
@@ -848,8 +1117,8 @@ angular.module('xeditable').factory('editableController',
   function($q, editableUtils) {
 
   //EditableController function
-  EditableController.$inject = ['$scope', '$attrs', '$element', '$parse', 'editableThemes', 'editableIcons', 'editableOptions', '$rootScope', '$compile', '$q', '$sce'];
-  function EditableController($scope, $attrs, $element, $parse, editableThemes, editableIcons, editableOptions, $rootScope, $compile, $q, $sce) {
+  EditableController.$inject = ['$scope', '$attrs', '$element', '$parse', 'editableThemes', 'editableIcons', 'editableOptions', '$rootScope', '$compile', '$q', '$sce', '$templateCache'];
+  function EditableController($scope, $attrs, $element, $parse, editableThemes, editableIcons, editableOptions, $rootScope, $compile, $q, $sce, $templateCache) {
     var valueGetter;
 
     //if control is disabled - it does not participate in waiting process
@@ -905,7 +1174,16 @@ angular.module('xeditable').factory('editableController',
      * @var {string|attribute} buttons
      * @memberOf editable-element
      */    
-    self.buttons = 'right'; 
+    self.buttons = 'right';
+    
+    /**
+     * Whether to show the editable element in a ui-bootstrap popover. Values: `true|false`.
+     *
+     * @var {boolean|attribute} popover
+     * @memberOf editable-element
+     */
+    self.popover = false;
+      
     /**
      * Action when control losses focus. Values: `cancel|submit|ignore`.
      * Has sense only for single editable element.
@@ -966,7 +1244,7 @@ angular.module('xeditable').factory('editableController',
        * @var {method|attribute} onhide
        * @memberOf editable-element
        */
-      if($attrs.onhide) {
+      if ($attrs.onhide) {
         self.onhide = function() {
           return $parse($attrs.onhide)($scope);
         };
@@ -978,7 +1256,7 @@ angular.module('xeditable').factory('editableController',
        * @var {method|attribute} oncancel
        * @memberOf editable-element
        */
-      if($attrs.oncancel) {
+      if ($attrs.oncancel) {
         self.oncancel = function() {
           return $parse($attrs.oncancel)($scope);
         };
@@ -1010,6 +1288,10 @@ angular.module('xeditable').factory('editableController',
         };
       }
 
+      if ($attrs.popover) {
+        self.popover = self.attrs.popover;
+      }
+        
       // watch change of model to update editable element
       // now only add/remove `editable-empty` class.
       // Initially this method called with newVal = undefined, oldVal = undefined
@@ -1119,6 +1401,13 @@ angular.module('xeditable').factory('editableController',
         self.editorEl.attr('blur', self.attrs.blur || editableOptions.blurElem);
       }
 
+      if (self.popover) {
+        var wrapper = angular.element('<div></div>');
+        wrapper.append(self.editorEl);
+        self.editorEl = wrapper;
+        $templateCache.put('popover.html', self.editorEl[0].outerHTML);
+      }
+        
       //apply `postrender` method of theme
       if (angular.isFunction(theme.postrender)) {
         theme.postrender.call(self);
@@ -1144,7 +1433,7 @@ angular.module('xeditable').factory('editableController',
 
       /*
       Originally render() was inside init() method, but some directives polluting editorEl,
-      so it is broken on second openning.
+      so it is broken on second opening.
       Cloning is not a solution as jqLite can not clone with event handler's.
       */
       self.render();
@@ -1176,6 +1465,10 @@ angular.module('xeditable').factory('editableController',
       self.editorEl.remove();
       $element.removeClass('editable-hide');
 
+      if (self.popover) {
+        $templateCache.remove('popover.html');
+      }
+      
       // onhide
       return self.onhide();
     };
@@ -1480,7 +1773,8 @@ function($parse, $compile, editableThemes, $rootScope, $document, editableContro
           // bind click - if no external form defined
           if(!attrs.eForm || attrs.eClickable) {
             elem.addClass('editable-click');
-            elem.bind(editableOptions.activationEvent, function(e) {
+            var activationEvent = (attrs.activationEvent) ? attrs.activationEvent : editableOptions.activationEvent;
+            elem.bind(activationEvent, function(e) {
               e.preventDefault();
               e.editable = eCtrl;
               if(!is_disabled()) {
@@ -2743,7 +3037,7 @@ angular.module('xeditable').factory('editableThemes', function() {
     'bs3': {
       formTpl:     '<form class="form-inline editable-wrap" role="form"></form>',
       noformTpl:   '<span class="editable-wrap"></span>',
-      controlsTpl: '<div class="editable-controls form-group" ng-class="{\'has-error\': $error}"></div>',
+      controlsTpl: '<span class="editable-controls form-group" ng-class="{\'has-error\': $error}"></span>',
       inputTpl:    '',
       errorTpl:    '<div class="editable-error help-block" data-ng-if="$error" data-ng-bind-html="$error"></div>',
       buttonsTpl:  '<span class="editable-buttons"></span>',
